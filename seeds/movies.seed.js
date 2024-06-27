@@ -1,3 +1,6 @@
+import { connect, connection } from 'mongoose';
+import { insertMany } from '../models/Movie.model';
+
 const movies = [
     {
       title: "A Wrinkle in Time",
@@ -83,7 +86,18 @@ const movies = [
 
 
 // Add here the script that will be run to actually seed the database (feel free to refer to the previous lesson)
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/lab-express-cinema";
 
+connect(MONGO_URI , { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    return insertMany(moviesData);
+  })
+  .then(moviesFromDB => {
+    console.log(`Successfully seeded ${moviesFromDB.length} movies to the database.`);
+    connection.close();
+  })
+  .catch(error => {
+    console.error(`Error seeding movies: ${error}`);
+    connection.close();
+  });
   
-
-// ... your code here
